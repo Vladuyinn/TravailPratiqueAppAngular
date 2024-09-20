@@ -10,8 +10,6 @@ app.use(express.json()); // Parse les requêtes JSON
 app.use(bodyParser.json()); //Parse le corps de la requête
 /////////////////////////////////////////////////////////////////////////////
 
-let users;
-
 //GET pour récupérer les utilisateurs
 app.get("/user", (req, res) => {
   fs.readFile("list_user.json", "utf8", (err, data) => {
@@ -20,24 +18,23 @@ app.get("/user", (req, res) => {
   });
 });
 
+//POST pour ajouter des utilisateurs
 app.post("/user", (req, res) => {
-  const newUser = req.body.nom; // Le nouvel utilisateur à ajouter
+  const newUser = req.body.nom;
 
   // Lecture rapide du fichier pour enlever les crochets finaux et la virgule finale
   fs.readFile("list_user.json", "utf8", (err, data) => {
-    // Vérification si le fichier contient uniquement un tableau vide "[]"
+    // Vérification si le fichier contient uniquement un tableau vide "[]" s'il ne contient rien on rajoute seuleemnt l'utilisateur
     let trimmedData = data.trim();
-
-    // Si le fichier ne contient que "[]", on ajoute directement le nouvel utilisateur sans virgule
     let newContent;
     if (trimmedData === "[]" || trimmedData === "[\n]") {
       newContent = `["${newUser}"]`;
     } else {
-      // Sinon, on retire les deux derniers caractères (crochet fermant et nouvelle ligne)
+      // Sinon, on retire le crochet fermant
       trimmedData = trimmedData.slice(0, -1);
 
       // On ajoute une virgule, puis le nouvel utilisateur, suivi de la fermeture du tableau
-      newContent = `${trimmedData},"${newUser}"]`;
+      newContent = `${trimmedData}, "${newUser}"]`;
     }
 
     // Réécrire le fichier avec le nouvel utilisateur
@@ -48,6 +45,7 @@ app.post("/user", (req, res) => {
   });
 });
 
+//PUT afin de modifier un utilisateur
 app.put("/user/:index", (req, res) => {
   const index = req.params.index; // Index de l'utilisateur à mettre à jour
   const newUserName = req.body.nom; // Nouveau nom de l'utilisateur
@@ -63,7 +61,11 @@ app.put("/user/:index", (req, res) => {
       users[index] = newUserName;
 
       // Réécriture du fichier avec les modifications
-      fs.writeFile("list_user.json", JSON.stringify(users, null, 2), "utf8", (err) => {
+      fs.writeFile(
+        "list_user.json",
+        JSON.stringify(users, null, 2),
+        "utf8",
+        (err) => {
           res.send("Utilisateur mis à jour avec succès");
         }
       );
@@ -75,9 +77,14 @@ app.put("/user/:index", (req, res) => {
 app.delete("/user", (req, res) => {
   const index = req.params.index;
   fs.readFile("list_user.json", "utf8", (err, data) => {
-      fs.writeFile("list_user.json", JSON.stringify([], null, 2), "utf8", (err) => {
+    fs.writeFile(
+      "list_user.json",
+      JSON.stringify([], null, 2),
+      "utf8",
+      (err) => {
         res.send("Utilisateur mis à jour avec succès");
-      });
+      }
+    );
   });
 });
 
