@@ -16,7 +16,6 @@ export class AppComponent implements OnInit {
   newUser: string = '';
   editingIndex: number | null = null; // Stocke l'index de l'utilisateur en cours d'édition
   editedUserName: string = ''; // Stocke le nom d'utilisateur modifié
-  // user: string = '' ;
 
   constructor(private apiService: ApiService) {}
 
@@ -75,14 +74,4 @@ export class AppComponent implements OnInit {
     });
     window.location.reload();
   }
-
-
-
-  //fonction pour supprimer un seul utilisateur
-  // deleteUser(index: number) {
-  //   this.apiService.deleteOneUser(index).subscribe(() => {
-  //     this.listUser.splice(index, 1);
-  //   });
-  //   window.location.reload();
-  // }
 }

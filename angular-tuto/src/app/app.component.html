@@ -28,20 +28,15 @@
       <span>
         @if (editingIndex !== $index) {
         <li class="user-item">
-          {{ user }} <button class="edit-icon" (click)="editUser($index)">✏️</button>
-          <!-- <button class="cancel-btn" (click)="deleteUser($index)">🗑️</button> -->
-          
-
+          {{ user }} <button class="edit-icon" (click)="editUser($index)">✏️</button>       
         </li>
-
         }
       </span>
 
       }
-      <!-- <li> {{ userList }} </li> -->
     </ul>
   </div>
+  
   <!-- Bouton pour effacer tous les utilisateurs -->
-
-  <button (click)="clearAllUsers()" class="clear-btn">Effacer tous les utilisateurs</button>
+  <button (click)="clearAllUsers()" class="clear-btn">Effacer tous les utilisateurs 🗑️</button>
 </div>
