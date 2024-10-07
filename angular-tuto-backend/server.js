@@ -9,14 +9,14 @@ app.use(express.json()); // Parse les requêtes JSON
 
 /////////////////////////////////////////////////////////////////////////////
 
-// Fonction utilitaire pour lire le fichier utilisateur
-function readUserFile(callback) {
+// Fonction utilitaire pour lire et "décoder" les utilisateurs du fichier JSON
+function decodeUserFile(callback) {
   fs.readFile("list_user.json", "utf8", (err, data) => {
     if (err) {
       callback(err, null);
     } else {
       try {
-        const users = JSON.parse(data);
+        const users = JSON.parse(data); // JSON.decode equivalent
         callback(null, users);
       } catch (parseError) {
         callback(parseError, null);
@@ -25,18 +25,19 @@ function readUserFile(callback) {
   });
 }
 
-// Fonction utilitaire pour écrire dans le fichier utilisateur
-function writeUserFile(data, callback) {
-  fs.writeFile("list_user.json", JSON.stringify(data, null, 2), "utf8", callback);
+// Fonction utilitaire pour "encoder" et écrire les utilisateurs dans le fichier JSON
+function encodeUserFile(users, callback) {
+  const data = JSON.stringify(users, null, 2); // JSON.encode equivalent
+  fs.writeFile("list_user.json", data, "utf8", callback);
 }
 
 // GET pour récupérer les utilisateurs
 app.get("/user", (req, res) => {
-  readUserFile((err, users) => {
+  decodeUserFile((err, users) => {
     if (err) {
       return res.status(500).json({ error: "Erreur lors de la lecture des utilisateurs" });
     }
-    res.json(users);
+    res.json(users); // Renvoie les utilisateurs décodés
   });
 });
 
@@ -47,14 +48,14 @@ app.post("/user", (req, res) => {
     return res.status(400).json({ error: "Nom d'utilisateur manquant" });
   }
 
-  readUserFile((err, users) => {
+  decodeUserFile((err, users) => {
     if (err) {
       return res.status(500).json({ error: "Erreur lors de la lecture des utilisateurs" });
     }
 
     users.push(newUser); // Ajoute le nouvel utilisateur
 
-    writeUserFile(users, (err) => {
+    encodeUserFile(users, (err) => {
       if (err) {
         return res.status(500).json({ error: "Erreur lors de l'écriture des utilisateurs" });
       }
@@ -72,15 +73,15 @@ app.put("/user/:index", (req, res) => {
     return res.status(400).json({ error: "Nom d'utilisateur manquant" });
   }
 
-  readUserFile((err, users) => {
+  decodeUserFile((err, users) => {
     if (err) {
       return res.status(500).json({ error: "Erreur lors de la lecture des utilisateurs" });
     }
 
     if (index >= 0 && index < users.length) {
-      users[index] = newUserName;
+      users[index] = newUserName; // Modifie le nom de l'utilisateur
 
-      writeUserFile(users, (err) => {
+      encodeUserFile(users, (err) => {
         if (err) {
           return res.status(500).json({ error: "Erreur lors de l'écriture des utilisateurs" });
         }
@@ -94,7 +95,7 @@ app.put("/user/:index", (req, res) => {
 
 // DELETE pour supprimer tous les utilisateurs
 app.delete("/user", (req, res) => {
-  writeUserFile([], (err) => {
+  encodeUserFile([], (err) => {
     if (err) {
       return res.status(500).json({ error: "Erreur lors de la suppression des utilisateurs" });
     }
