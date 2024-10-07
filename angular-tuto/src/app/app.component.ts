@@ -21,8 +21,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.apiService.getUser().subscribe((response) => {
-      console.log(response);
-      this.listUser = response;
+      this.listUser = response.map((user: any) => user.nom); // Si l'API renvoie un tableau d'objets avec un champ 'nom'
     });
   }
 
